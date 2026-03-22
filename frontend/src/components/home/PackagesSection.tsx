@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { getImageUrl } from "@/utils/utils";
 import { Clock, Check, IndianRupee } from "lucide-react";
 
 const PackagesSection = () => {
+  const navigate = useNavigate();
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -83,8 +84,8 @@ const PackagesSection = () => {
                       </div>
                     ))}
                   </div>
-                  <Button variant="gold" className="w-full" asChild>
-                    <Link to={`/booking`}>Book Now</Link>
+                  <Button variant="gold" className="w-full" onClick={() => navigate("/booking", { state: { pkg } })}>
+                    Book Now
                   </Button>
                 </div>
               </motion.div>

@@ -8,6 +8,7 @@ import destinationRoutes from "./routes/destinationRoutes.js";
 import packageRoutes from "./routes/packageRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use("/api/destinations", destinationRoutes);
 app.use("/api/packages", packageRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/gallery", galleryRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

@@ -41,7 +41,7 @@ const Footer = () => {
               {["Kedarnath", "Badrinath", "Gangotri", "Yamunotri"].map((dest) => (
                 <li key={dest}>
                   <Link
-                    to={`/destination/${dest.toLowerCase()}`}
+                    to={`/packages?destination=${dest.toLowerCase()}`}
                     className="text-sm hover:text-gold transition-colors"
                   >
                     {dest}

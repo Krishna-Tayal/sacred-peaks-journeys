@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MapPin, Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import { getImageUrl } from "@/utils/utils";
 
 const DestinationDetailPage = () => {
+  const navigate = useNavigate();
   const { slug } = useParams();
   const [destination, setDestination] = useState<any>(null);
   const [packages, setPackages] = useState<any[]>([]);
@@ -65,7 +66,9 @@ const DestinationDetailPage = () => {
     );
   }
 
-  const relatedPackages = packages.filter((p) => Array.isArray(p.destinationIds) && p.destinationIds.includes(destination._id));
+  const relatedPackages = packages.filter(
+    (p) => Array.isArray(p.destinations) && destination?.slug && p.destinations.includes(destination.slug)
+  );
 
   return (
     <div className="min-h-screen">
@@ -130,8 +133,12 @@ const DestinationDetailPage = () => {
                     <h3 className="font-display text-lg font-semibold text-foreground">{pkg.name}</h3>
                     <p className="font-body text-sm text-muted-foreground mt-1">{pkg.duration}</p>
                     <p className="font-display text-2xl font-bold text-gold mt-2">₹{Number(pkg.price || 0).toLocaleString()}</p>
-                    <Button variant="gold" className="w-full mt-4" asChild>
-                      <Link to="/booking">Book Now</Link>
+                    <Button
+                      variant="gold"
+                      className="w-full mt-4"
+                      onClick={() => navigate("/booking", { state: { pkg } })}
+                    >
+                      Book Now
                     </Button>
                   </div>
                 ))}

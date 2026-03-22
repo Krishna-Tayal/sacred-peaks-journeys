@@ -13,7 +13,7 @@ const AdminDestinations = () => {
   const [editing, setEditing] = useState<Destination | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [fetching, setFetching] = useState(false);
-  const [form, setForm] = useState({ name: "", slug: "", shortDescription: "", description: "", bestTimeToVisit: "", altitude: "", thumbnailImage: "", galleryImages: [] as string[] });
+  const [form, setForm] = useState({ name: "", shortDescription: "", description: "", bestTimeToVisit: "", altitude: "", thumbnailImage: "", galleryImages: [] as string[] });
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -102,7 +102,7 @@ const AdminDestinations = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", slug: "", shortDescription: "", description: "", bestTimeToVisit: "", altitude: "", thumbnailImage: "", galleryImages: [] });
+    setForm({ name: "", shortDescription: "", description: "", bestTimeToVisit: "", altitude: "", thumbnailImage: "", galleryImages: [] });
     setThumbnailPreview("");
     setGalleryPreviews([]);
     setThumbnailFile(null);
@@ -110,8 +110,8 @@ const AdminDestinations = () => {
   };
 
   const handleSave = async () => {
-    if (!form.name.trim() || !form.slug.trim() || !form.shortDescription.trim()) {
-      toast({ title: "Please fill in name, slug, and short description" });
+    if (!form.name.trim() || !form.shortDescription.trim()) {
+      toast({ title: "Please fill in name and short description" });
       return;
     }
     if (!form.description.trim()) {
@@ -151,7 +151,6 @@ const AdminDestinations = () => {
     try {
       const formData = new FormData();
       formData.append("name", form.name);
-      formData.append("slug", form.slug);
       formData.append("description", form.description);
       formData.append("bestTime", form.bestTimeToVisit);
       formData.append("altitude", form.altitude);
@@ -174,21 +173,6 @@ const AdminDestinations = () => {
         return;
       }
 
-      const createdDestination = data.data;
-      const newDest: Destination = {
-        id: createdDestination._id || Date.now().toString(),
-        name: form.name,
-        slug: form.slug,
-        shortDescription: form.shortDescription,
-        description: form.description,
-        image: thumbnailPreview,
-        thumbnailImage: thumbnailPreview,
-        bestTimeToVisit: form.bestTimeToVisit,
-        altitude: form.altitude,
-        gallery: galleryPreviews.length > 0 ? galleryPreviews : [thumbnailPreview],
-        galleryImages: galleryPreviews.length > 0 ? galleryPreviews : [thumbnailPreview],
-      };
-
       await fetchDestinations();
       toast({ title: "Destination added successfully" });
       setShowForm(false);
@@ -206,7 +190,6 @@ const AdminDestinations = () => {
     const gallerySource = d.galleryImages?.length ? d.galleryImages : d.gallery || [];
     setForm({
       name: d.name,
-      slug: d.slug,
       shortDescription: d.shortDescription,
       description: d.description,
       bestTimeToVisit: d.bestTimeToVisit,
@@ -243,12 +226,12 @@ const AdminDestinations = () => {
         <div className="bg-mountain-light/40 rounded-xl p-6 border border-primary-foreground/10 mb-6 space-y-3">
           <h3 className="font-display text-base text-primary-foreground">{editing ? "Edit" : "Add"} Destination</h3>
 
-          {(["name", "slug", "shortDescription", "bestTimeToVisit", "altitude"] as const).map((field) => (
+          {(["name", "shortDescription", "bestTimeToVisit", "altitude"] as const).map((field) => (
             <input
               key={field}
               placeholder={field.replace(/([A-Z])/g, " $1").trim()}
               value={(form as any)[field]}
-              onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+              onChange={(e) => setForm((prev) => ({ ...prev, [field]: e.target.value }))}
               className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10 font-body text-sm text-primary-foreground placeholder:text-primary-foreground/30 focus:outline-none focus:ring-2 focus:ring-gold/50"
             />
           ))}

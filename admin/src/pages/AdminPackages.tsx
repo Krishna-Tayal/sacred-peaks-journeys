@@ -15,7 +15,8 @@ const AdminPackages = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
-  const [form, setForm] = useState({ name: "", destination: "", price: "", duration: "", description: "", facilities: "" });
+  const [form, setForm] = useState({ name: "", price: "", duration: "", description: "", facilities: "" });
+  const [selectedDestinations, setSelectedDestinations] = useState<string[]>([]);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
@@ -87,13 +88,14 @@ const AdminPackages = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", destination: "", price: "", duration: "", description: "", facilities: "" });
+    setForm({ name: "", price: "", duration: "", description: "", facilities: "" });
+    setSelectedDestinations([]);
     setThumbnailFile(null);
     setThumbnailPreview("");
   };
 
   const handleSave = async () => {
-    if (!form.name.trim() || !form.destination.trim() || !form.price.trim() || !form.duration.trim()) {
+    if (!form.name.trim() || selectedDestinations.length === 0 || !form.price.trim() || !form.duration.trim()) {
       toast({ title: "Please fill all required fields" });
       return;
     }
@@ -106,11 +108,12 @@ const AdminPackages = () => {
     try {
       const formData = new FormData();
       formData.append("name", form.name);
-      formData.append("destination", form.destination);
+      formData.append("destinations", selectedDestinations.join(","));
       formData.append("price", form.price);
       formData.append("duration", form.duration);
       formData.append("description", form.description);
-      form.facilities.split(",").map((f) => f.trim()).filter(Boolean).forEach((v) => formData.append("facilities", v));
+      const facilitiesArray = form.facilities.split(",").map((f) => f.trim()).filter(Boolean);
+      formData.append("facilities", JSON.stringify(facilitiesArray));
       if (thumbnailFile) formData.append("thumbnailImage", thumbnailFile);
 
       let res;
@@ -140,14 +143,19 @@ const AdminPackages = () => {
 
   const startEdit = (p: TravelPackage) => {
     setEditing(p);
+    const pkgDestinations = Array.isArray((p as any).destinations)
+      ? (p as any).destinations
+      : (p as any).destination
+      ? [(p as any).destination]
+      : [];
     setForm({
       name: p.name,
-      destination: (p as any).destination || "",
       price: String(p.price),
       duration: p.duration,
       description: p.description || "",
       facilities: Array.isArray(p.facilities) ? p.facilities.join(", ") : String(p.facilities || ""),
     });
+    setSelectedDestinations(pkgDestinations.map((item: string) => String(item)));
     const thumb = (p as any).thumbnailImage || p.thumbnailImage || p.image;
     setThumbnailPreview(getImageUrl(thumb));
     setShowForm(true);
@@ -170,16 +178,34 @@ const AdminPackages = () => {
           <h3 className="font-display text-base text-primary-foreground">{editing ? "Edit" : "Add"} Package</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input placeholder="Package Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
-            <select value={form.destination} onChange={(e) => setForm({ ...form, destination: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10">
-              <option value="">Select a destination</option>
-              {destinations.map((dest) => (
-                <option key={(dest as any)._id || dest.id} value={(dest as any)._id || dest.id}>
-                  {dest.name}
-                </option>
-              ))}
-            </select>
             <input placeholder="Price" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
             <input placeholder="Duration" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
+          </div>
+          <div className="rounded-lg bg-mountain border border-primary-foreground/10 p-3">
+            <p className="text-sm font-medium text-primary-foreground mb-2">Select Destinations</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {destinations.map((d) => {
+                const slug = String((d as any).slug || "");
+                if (!slug) return null;
+                return (
+                  <label key={(d as any)._id || d.id || slug} className="flex items-center gap-2 text-sm text-primary-foreground/80">
+                    <input
+                      type="checkbox"
+                      value={slug}
+                      checked={selectedDestinations.includes(slug)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedDestinations((prev) => [...prev, slug]);
+                        } else {
+                          setSelectedDestinations((prev) => prev.filter((item) => item !== slug));
+                        }
+                      }}
+                    />
+                    {d.name}
+                  </label>
+                );
+              })}
+            </div>
           </div>
           <textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
           <input placeholder="Facilities (comma separated)" value={form.facilities} onChange={(e) => setForm({ ...form, facilities: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
@@ -201,7 +227,11 @@ const AdminPackages = () => {
             <img src={p.thumbnailImage ? getImageUrl(p.thumbnailImage) : "https://via.placeholder.com/64"} alt={p.name} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <h4 className="font-display text-sm font-semibold text-primary-foreground">{p.name}</h4>
-              <p className="font-body text-xs text-primary-foreground/50">{(p as any).destination || "Unknown destination"} · ₹{p.price} · {p.duration}</p>
+              <p className="font-body text-xs text-primary-foreground/50">
+                {Array.isArray((p as any).destinations) && (p as any).destinations.length > 0
+                  ? (p as any).destinations.join(", ")
+                  : (p as any).destination || "Unknown destination"} · ₹{p.price} · {p.duration}
+              </p>
             </div>
             <div className="flex gap-2 flex-shrink-0">
               <button onClick={() => startEdit(p)} className="p-2 rounded-lg hover:bg-primary-foreground/5 text-gold transition-colors"><Pencil className="h-4 w-4" /></button>

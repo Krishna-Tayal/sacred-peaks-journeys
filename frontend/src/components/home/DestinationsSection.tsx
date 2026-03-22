@@ -2,8 +2,16 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { getImageUrl } from "@/utils/utils";
 import { MapPin } from "lucide-react";
+
+const BACKEND_URL = "http://localhost:5000";
+
+const getDestinationImageSrc = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const normalizedPath = path.replace(/\\/g, "/").replace(/^\/+/, "");
+  return `${BACKEND_URL}/${normalizedPath}`;
+};
 
 const DestinationsSection = () => {
   const [destinations, setDestinations] = useState<any[]>([]);
@@ -57,14 +65,14 @@ const DestinationsSection = () => {
                 transition={{ delay: i * 0.1 }}
               >
                 <Link
-                  to={`/destination/${dest.slug}`}
+                  to={`/packages?destination=${dest.slug}`}
                   className="group block rounded-xl overflow-hidden bg-card shadow-elevated hover:shadow-lg transition-all duration-500"
                 >
-                  <div className="relative h-56 overflow-hidden">
+                  <div className="relative h-64 overflow-hidden">
                     <img
-                      src={getImageUrl(dest.thumbnailImage || dest.image)}
+                      src={getDestinationImageSrc(dest.thumbnailImage || dest.image)}
                       alt={dest.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-64 object-cover rounded-lg transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-mountain/60 to-transparent" />
                     <div className="absolute bottom-3 left-3 flex items-center gap-1 text-primary-foreground">
@@ -76,7 +84,7 @@ const DestinationsSection = () => {
                     <h3 className="font-display text-lg font-semibold text-foreground mb-1">{dest.name}</h3>
                     <p className="font-body text-sm text-muted-foreground line-clamp-2">{dest.shortDescription}</p>
                     <span className="inline-block mt-3 text-gold text-sm font-medium font-body group-hover:underline">
-                      View Details →
+                      View Packages →
                     </span>
                   </div>
                 </Link>

@@ -44,15 +44,6 @@ export interface Booking {
   createdAt: string;
 }
 
-export interface Testimonial {
-  id: string;
-  name: string;
-  location: string;
-  text: string;
-  rating: number;
-  avatar: string;
-}
-
 export const destinations: Destination[] = [
   {
     id: "1",
@@ -152,33 +143,6 @@ export const packages: TravelPackage[] = [
     description: "Combine spirituality with adventure on this trek covering Gangotri and Yamunotri with expert trekking guides.",
     image: yamunotriImg,
     thumbnailImage: yamunotriImg,
-  },
-];
-
-export const testimonials: Testimonial[] = [
-  {
-    id: "1",
-    name: "Rajesh Sharma",
-    location: "Delhi",
-    text: "Trip Tonick made our Char Dham Yatra absolutely seamless. The guides were knowledgeable and the arrangements were perfect. A truly divine experience!",
-    rating: 5,
-    avatar: "RS",
-  },
-  {
-    id: "2",
-    name: "Priya Patel",
-    location: "Mumbai",
-    text: "The Kedarnath trek was life-changing. Trip Tonick's team ensured we were comfortable and safe throughout. Highly recommend their services!",
-    rating: 5,
-    avatar: "PP",
-  },
-  {
-    id: "3",
-    name: "Amit Kumar",
-    location: "Bangalore",
-    text: "Excellent organization and warm hospitality. The complete Char Dham package was worth every penny. Will book again for my parents.",
-    rating: 4,
-    avatar: "AK",
   },
 ];
 

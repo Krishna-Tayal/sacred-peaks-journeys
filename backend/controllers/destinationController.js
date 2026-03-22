@@ -1,18 +1,27 @@
 import Destination from "../models/Destination.js";
 
+const generateSlug = (text = "") =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "");
+
 export const createDestination = async (req, res) => {
   try {
-    const { name, slug, description, bestTime, altitude } = req.body;
+    const { name, description, bestTime, altitude } = req.body;
     const thumbnailImage = req.files?.thumbnailImage?.[0]?.path;
     const galleryImages = req.files?.galleryImages?.map((f) => f.path) || [];
 
-    if (!name || !slug || !description || !bestTime || !altitude || !thumbnailImage) {
+    if (!name || !description || !bestTime || !altitude || !thumbnailImage) {
       return res.status(400).json({ success: false, message: "Missing required destination fields." });
     }
 
-    const existing = await Destination.findOne({ slug });
+    const baseSlug = generateSlug(name) || `destination-${Date.now()}`;
+    let slug = baseSlug;
+    const existing = await Destination.findOne({ slug: baseSlug });
     if (existing) {
-      return res.status(409).json({ success: false, message: "Destination slug already exists." });
+      slug = `${baseSlug}-${Date.now()}`;
     }
 
     const destination = await Destination.create({

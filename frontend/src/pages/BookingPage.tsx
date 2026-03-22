@@ -1,35 +1,15 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Users, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getImageUrl } from "@/utils/utils";
 import { toast } from "@/hooks/use-toast";
 
 const BookingPage = () => {
-  const [pkg, setPkg] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const loadPackage = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("http://localhost:5000/api/packages");
-        const data = await res.json();
-        const pkgData = (data.data || data || [])[0];
-        setPkg(pkgData || null);
-      } catch (err) {
-        console.error(err);
-        setError("Could not load package details.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    void loadPackage();
-  }, []);
+  const location = useLocation();
+  const packageData = location.state?.pkg;
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -37,48 +17,78 @@ const BookingPage = () => {
     travelDate: "",
     travelers: 1,
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Booking Submitted! 🙏",
-      description: "We'll contact you within 24 hours to confirm your pilgrimage.",
-    });
-    setForm({ name: "", email: "", phone: "", travelDate: "", travelers: 1 });
+    setSubmitting(true);
+    try {
+      const payload = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        package: packageData?.name || "",
+        travelers: form.travelers,
+        date: form.travelDate,
+      };
+
+      const res = await fetch("http://localhost:5000/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        toast({
+          title: "Booking Failed",
+          description: result?.message || "Could not submit your booking. Please try again.",
+        });
+        return;
+      }
+
+      toast({
+        title: "Booking Submitted! 🙏",
+        description: "We'll contact you within 24 hours to confirm your pilgrimage.",
+      });
+      setForm({ name: "", email: "", phone: "", travelDate: "", travelers: 1 });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Booking Failed",
+        description: "Could not submit your booking. Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading booking information...</div>;
+  if (!packageData) {
+    return <p>Package not found</p>;
   }
 
-  if (error) {
-    return <div className="min-h-screen flex items-center justify-center text-destructive">{error}</div>;
-  }
-
-  if (!pkg) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <h1 className="font-display text-2xl font-bold text-foreground">Package not found</h1>
-          <Button variant="gold" className="mt-4" asChild>
-            <Link to="/packages">View Packages</Link>
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const heroImagePath = (packageData.thumbnailImage || packageData.image || "") as string;
+  const heroImageUrl = `http://localhost:5000/${heroImagePath.replace(/\\/g, "/").replace(/^\/+/, "")}`;
 
   return (
     <div className="min-h-screen">
       <Navbar />
-      <section className="relative h-[35vh] flex items-end">
-        <img src={getImageUrl(pkg.image)} alt={pkg.name} className="absolute inset-0 w-full h-full object-cover" />
+      <section
+        className="relative h-[35vh] flex items-end"
+        style={{
+          backgroundImage: `url(${heroImageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <div className="absolute inset-0 bg-mountain/70" />
         <div className="relative z-10 container mx-auto px-4 pb-8">
           <Link to="/packages" className="inline-flex items-center gap-1 text-gold text-sm font-body mb-2 hover:underline">
             <ArrowLeft className="h-4 w-4" /> Back to Packages
           </Link>
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground">Booking {pkg.name}</h1>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground">Booking {packageData.name}</h1>
         </div>
       </section>
 
@@ -95,15 +105,15 @@ const BookingPage = () => {
               <div className="space-y-3 font-body text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Package</span>
-                  <span className="text-foreground font-medium">{pkg.name}</span>
+                  <span className="text-foreground font-medium">{packageData.name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Duration</span>
-                  <span className="text-foreground">{pkg.duration}</span>
+                  <span className="text-foreground">{packageData.duration}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Price/person</span>
-                  <span className="text-gold font-bold">₹{pkg.price.toLocaleString()}</span>
+                  <span className="text-gold font-bold">₹{Number(packageData.price || 0).toLocaleString()}</span>
                 </div>
                 <hr className="border-border" />
                 <div className="flex justify-between">
@@ -112,7 +122,7 @@ const BookingPage = () => {
                 </div>
                 <div className="flex justify-between font-semibold text-base">
                   <span className="text-foreground">Total</span>
-                  <span className="text-gold">₹{(pkg.price * form.travelers).toLocaleString()}</span>
+                  <span className="text-gold">₹{(Number(packageData.price || 0) * form.travelers).toLocaleString()}</span>
                 </div>
               </div>
             </motion.div>
@@ -165,8 +175,8 @@ const BookingPage = () => {
                   />
                 </div>
               </div>
-              <Button variant="gold" size="lg" className="w-full" type="submit">
-                Confirm Booking
+              <Button variant="gold" size="lg" className="w-full" type="submit" disabled={submitting}>
+                {submitting ? "Submitting..." : "Confirm Booking"}
               </Button>
               <p className="font-body text-xs text-muted-foreground text-center">
                 No payment required now. We'll confirm your booking via phone/email.

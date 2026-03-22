@@ -4,8 +4,16 @@ import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getImageUrl } from "@/utils/utils";
 import heroImg from "@/assets/hero-bg.jpg";
+
+const BACKEND_URL = "http://localhost:5000";
+
+const getDestinationImageSrc = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const normalizedPath = path.replace(/\\/g, "/").replace(/^\/+/, "");
+  return `${BACKEND_URL}/${normalizedPath}`;
+};
 
 const DestinationsPage = () => {
   const [destinations, setDestinations] = useState<any[]>([]);
@@ -63,14 +71,14 @@ const DestinationsPage = () => {
                   transition={{ delay: i * 0.1 }}
                 >
                   <Link
-                    to={`/destination/${dest.slug}`}
+                    to={`/packages?destination=${dest.slug}`}
                     className="group block rounded-xl overflow-hidden bg-card shadow-elevated hover:shadow-lg transition-all duration-500"
                   >
                     <div className="relative h-64 overflow-hidden">
                       <img
-                        src={getImageUrl(dest.thumbnailImage || dest.image)}
+                        src={getDestinationImageSrc(dest.thumbnailImage || dest.image)}
                         alt={dest.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="w-full h-64 object-cover rounded-lg transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-mountain/70 to-transparent" />
                       <div className="absolute bottom-4 left-4">
@@ -85,7 +93,7 @@ const DestinationsPage = () => {
                       <p className="font-body text-sm text-muted-foreground mb-2">{dest.shortDescription}</p>
                       <div className="flex items-center justify-between">
                         <span className="font-body text-xs text-gold">Best: {dest.bestTimeToVisit}</span>
-                        <span className="text-gold text-sm font-medium font-body group-hover:underline">View Details →</span>
+                        <span className="text-gold text-sm font-medium font-body group-hover:underline">View Packages →</span>
                       </div>
                     </div>
                   </Link>

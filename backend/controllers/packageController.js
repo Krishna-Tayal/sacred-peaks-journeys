@@ -1,22 +1,57 @@
 import Package from "../models/Package.js";
 
+const parseDestinations = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((d) => String(d).trim()).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value.split(",").map((d) => d.trim()).filter(Boolean);
+  }
+
+  return [];
+};
+
+const parseFacilities = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    const parsed = JSON.parse(value || "[]");
+    if (!Array.isArray(parsed)) {
+      throw new Error("Facilities must be a JSON array.");
+    }
+    return parsed.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  return [];
+};
+
 export const createPackage = async (req, res) => {
   try {
-    const { name, destination, price, duration, features } = req.body;
+    const { name, destinations, price, duration, description } = req.body;
     const thumbnailImage = req.file?.path;
+    const destinationsArray = parseDestinations(destinations);
+    let facilitiesArray = [];
 
-    if (!name || !destination || !price || !duration || !thumbnailImage) {
+    try {
+      facilitiesArray = parseFacilities(req.body.facilities);
+    } catch (parseError) {
+      return res.status(400).json({ success: false, message: parseError.message });
+    }
+
+    if (!name || destinationsArray.length === 0 || !price || !duration || !description || !thumbnailImage) {
       return res.status(400).json({ success: false, message: "Missing required package fields." });
     }
 
-    const featuresArray = typeof features === "string" ? features.split(",").map((f) => f.trim()).filter(Boolean) : features || [];
-
     const newPackage = await Package.create({
       name,
-      destination,
+      destinations: destinationsArray,
       price,
       duration,
-      features: featuresArray,
+      description,
+      facilities: facilitiesArray,
       thumbnailImage,
     });
 
@@ -40,11 +75,19 @@ export const getAllPackages = async (req, res) => {
 export const updatePackage = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, destination, price, duration, features } = req.body;
-    const update = { name, destination, price, duration };
+    const { name, destinations, price, duration, description } = req.body;
+    const update = { name, price, duration, description };
 
-    if (features) {
-      update.features = typeof features === "string" ? features.split(",").map((f) => f.trim()).filter(Boolean) : features;
+    if (destinations !== undefined) {
+      update.destinations = parseDestinations(destinations);
+    }
+
+    if (req.body.facilities !== undefined) {
+      try {
+        update.facilities = parseFacilities(req.body.facilities);
+      } catch (parseError) {
+        return res.status(400).json({ success: false, message: parseError.message });
+      }
     }
     if (req.file?.path) {
       update.thumbnailImage = req.file.path;

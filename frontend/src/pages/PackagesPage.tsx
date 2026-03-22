@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { Clock, Check, IndianRupee } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Clock, IndianRupee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,6 +9,7 @@ import { getImageUrl } from "@/utils/utils";
 import heroImg from "@/assets/hero-bg.jpg";
 
 const PackagesPage = () => {
+  const navigate = useNavigate();
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -64,29 +65,40 @@ const PackagesPage = () => {
                   className="bg-card rounded-xl overflow-hidden shadow-elevated group"
                 >
                   <div className="relative h-56 overflow-hidden">
-                    <img src={getImageUrl(pkg.thumbnailImage || pkg.image)} alt={pkg.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img
+                      src={pkg?.thumbnailImage ? getImageUrl(pkg.thumbnailImage) : "https://via.placeholder.com/600x400?text=Package"}
+                      alt={pkg?.name || "Package image"}
+                      className="w-full h-48 object-cover rounded-lg transition-transform duration-700 group-hover:scale-105"
+                    />
                     <div className="absolute top-4 right-4 bg-gold/90 backdrop-blur-sm rounded-full px-4 py-1.5 flex items-center gap-1">
                       <IndianRupee className="h-4 w-4 text-mountain" />
                       <span className="text-lg font-bold text-mountain font-body">{Number(pkg.price || 0).toLocaleString()}</span>
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="font-display text-xl font-semibold text-foreground">{pkg.name}</h3>
+                    <h3 className="font-display text-xl font-semibold text-foreground">{pkg?.name || "Unnamed Package"}</h3>
+                    <p className="font-body text-sm text-muted-foreground mt-1">
+                      {Array.isArray(pkg?.destinations) && pkg.destinations.length > 0
+                        ? pkg.destinations.join(", ")
+                        : "Destination details unavailable"}
+                    </p>
                     <div className="flex items-center gap-1 text-gold text-sm mt-1 mb-3">
                       <Clock className="h-4 w-4" />
-                      <span className="font-body">{pkg.duration}</span>
+                      <span className="font-body">{pkg?.duration || "Duration unavailable"}</span>
                     </div>
-                    <p className="font-body text-sm text-muted-foreground mb-4">{pkg.description}</p>
-                    <div className="grid grid-cols-2 gap-2 mb-5">
-                      {(pkg.features || []).map((f: string) => (
-                        <div key={f} className="flex items-center gap-1.5 text-xs text-muted-foreground font-body">
-                          <Check className="h-3 w-3 text-gold flex-shrink-0" /> {f}
-                        </div>
-                      ))}
+                    <p className="font-body text-sm text-muted-foreground mb-5 line-clamp-2">{pkg?.description || "No description available"}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <Button variant="outline-gold" className="w-full" onClick={() => navigate(`/packages/${pkg._id || pkg.id}`)}>
+                        View Details
+                      </Button>
+                      <Button
+                        variant="gold"
+                        className="w-full"
+                        onClick={() => navigate("/booking", { state: { pkg } })}
+                      >
+                        Book Now
+                      </Button>
                     </div>
-                    <Button variant="gold" className="w-full" asChild>
-                      <Link to="/booking">Book Now</Link>
-                    </Button>
                   </div>
                 </motion.div>
               ))}
