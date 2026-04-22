@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { Mountain, LayoutDashboard, MapPin, Package, Image, BookOpen, LogOut, Menu, X } from "lucide-react";
 
@@ -15,8 +15,16 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  useEffect(() => {
+    if (!localStorage.getItem("isAdmin")) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+
   const handleLogout = () => {
     sessionStorage.removeItem("admin_auth");
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("isAdmin");
     navigate("/login");
   };
 

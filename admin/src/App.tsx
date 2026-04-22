@@ -13,6 +13,7 @@ const App = () => (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<AdminLogin />} />
+      <Route path="/admin/dashboard" element={<Navigate to="/dashboard" replace />} />
       <Route path="/" element={<AdminLayout />}>
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="destinations" element={<AdminDestinations />} />

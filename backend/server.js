@@ -9,6 +9,8 @@ import packageRoutes from "./routes/packageRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import adminAuthRoutes from "./routes/adminAuthRoutes.js";
+import { ensureAdminUser } from "./utils/ensureAdminUser.js";
 
 dotenv.config();
 
@@ -33,6 +35,7 @@ app.use("/api/packages", packageRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/admin", adminAuthRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
@@ -40,6 +43,10 @@ app.use((err, req, res, next) => {
 });
 
 connectDB(MONGO_URI).then(() => {
+  ensureAdminUser().catch((error) => {
+    console.error("Failed to ensure admin user:", error.message);
+  });
+
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
