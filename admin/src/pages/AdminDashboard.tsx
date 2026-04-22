@@ -3,7 +3,7 @@ import { MapPin, Package, Image, BookOpen, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
-const ADMIN_API_BASE = "http://localhost:5000/api/admin";
+const ADMIN_API_BASE = `${import.meta.env.VITE_API_URL}/api/admin`;
 
 const AdminDashboard = () => {
   const [totalDestinations, setTotalDestinations] = useState(0);
@@ -19,10 +19,10 @@ const AdminDashboard = () => {
     const fetchData = async () => {
       try {
         const [destRes, galleryRes, bookingRes, pkgRes] = await Promise.all([
-          fetch("http://localhost:5000/api/destinations"),
-          fetch("http://localhost:5000/api/gallery"),
-          fetch("http://localhost:5000/api/bookings"),
-          fetch("http://localhost:5000/api/packages"),
+          fetch(`${import.meta.env.VITE_API_URL}/api/destinations`),
+          fetch(`${import.meta.env.VITE_API_URL}/api/gallery`),
+          fetch(`${import.meta.env.VITE_API_URL}/api/bookings`),
+          fetch(`${import.meta.env.VITE_API_URL}/api/packages`),
         ]);
 
         const destData = await destRes.json();

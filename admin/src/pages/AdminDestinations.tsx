@@ -23,7 +23,7 @@ const AdminDestinations = () => {
   const fetchDestinations = async () => {
     setFetching(true);
     try {
-      const response = await fetch("http://localhost:5000/api/destinations");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/destinations`);
       const data = await response.json();
       setDests(data?.data || []);
     } catch (error) {
@@ -46,7 +46,7 @@ const AdminDestinations = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/destinations/${destinationId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/destinations/${destinationId}`, {
         method: "DELETE",
       });
       const data = await response.json();
@@ -162,7 +162,7 @@ const AdminDestinations = () => {
         formData.append("galleryImages", file);
       });
 
-      const response = await fetch("http://localhost:5000/api/destinations", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/destinations`, {
         method: "POST",
         body: formData,
       });

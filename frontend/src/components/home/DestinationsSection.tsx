@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "${import.meta.env.VITE_API_URL}";
 
 const getDestinationImageSrc = (path?: string) => {
   if (!path) return "";
@@ -22,7 +22,7 @@ const DestinationsSection = () => {
     const fetchDestinations = async () => {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:5000/api/destinations");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/destinations`);
         const data = await res.json();
         setDestinations(data.data || data || []);
       } catch (err) {

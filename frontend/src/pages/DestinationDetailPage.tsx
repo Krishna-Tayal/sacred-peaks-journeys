@@ -20,8 +20,8 @@ const DestinationDetailPage = () => {
     setError("");
     try {
       const [destRes, pkgRes] = await Promise.all([
-        fetch("http://localhost:5000/api/destinations"),
-        fetch("http://localhost:5000/api/packages"),
+        fetch(`${import.meta.env.VITE_API_URL}/api/destinations`),
+        fetch(`${import.meta.env.VITE_API_URL}/api/packages`),
       ]);
       if (!destRes.ok || !pkgRes.ok) {
         throw new Error("Failed to load data.");

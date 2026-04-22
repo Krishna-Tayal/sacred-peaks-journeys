@@ -18,7 +18,7 @@ const PackagesPage = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/packages");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/packages`);
       const result = await res.json();
       setPackages(result.data || result || []);
     } catch (err) {

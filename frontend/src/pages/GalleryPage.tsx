@@ -15,7 +15,7 @@ const GalleryPage = () => {
 
   const fetchGallery = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/gallery");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gallery`);
       const result = await res.json();
       setGalleryImages(result.data || result || []);
     } catch (error) {
@@ -59,7 +59,7 @@ const GalleryPage = () => {
                   className="rounded-xl overflow-hidden"
                 >
                   <img
-                    src={`http://localhost:5000/${item.image}`}
+                    src={`${import.meta.env.VITE_API_URL}/${item.image}`}
                     alt="gallery"
                     className="w-full h-64 object-cover rounded-lg transition-transform duration-700 hover:scale-105"
                   />

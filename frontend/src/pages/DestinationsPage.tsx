@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import heroImg from "@/assets/hero-bg.jpg";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "${import.meta.env.VITE_API_URL}";
 
 const getDestinationImageSrc = (path?: string) => {
   if (!path) return "";
@@ -24,7 +24,7 @@ const DestinationsPage = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/destinations");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/destinations`);
       const result = await res.json();
       setDestinations(result.data || result || []);
     } catch (err) {

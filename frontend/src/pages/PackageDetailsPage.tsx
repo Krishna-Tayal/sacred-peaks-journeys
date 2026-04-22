@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "${import.meta.env.VITE_API_URL}";
 
 const getBackendImageUrl = (path?: string) => {
   if (!path) return "";
@@ -26,7 +26,7 @@ const PackageDetailsPage = () => {
       setLoading(true);
       setError("");
       try {
-        const response = await fetch("http://localhost:5000/api/packages");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/packages`);
         const result = await response.json();
         if (!response.ok) {
           setError(result?.message || "Failed to load package details.");

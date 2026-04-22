@@ -37,6 +37,7 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminAuthRoutes);
 
+
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ success: false, message: err.message || "Server error" });

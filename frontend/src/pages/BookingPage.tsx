@@ -32,7 +32,7 @@ const BookingPage = () => {
         date: form.travelDate,
       };
 
-      const res = await fetch("http://localhost:5000/api/bookings", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +70,7 @@ const BookingPage = () => {
   }
 
   const heroImagePath = (packageData.thumbnailImage || packageData.image || "") as string;
-  const heroImageUrl = `http://localhost:5000/${heroImagePath.replace(/\\/g, "/").replace(/^\/+/, "")}`;
+  const heroImageUrl = `${import.meta.env.VITE_API_URL}/${heroImagePath.replace(/\\/g, "/").replace(/^\/+/, "")}`;
 
   return (
     <div className="min-h-screen">

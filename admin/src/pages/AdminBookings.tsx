@@ -30,7 +30,7 @@ const AdminBookings = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5000/api/bookings");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`);
       const result = await response.json();
       if (!response.ok) {
         setError(result?.message || "Failed to load bookings.");
@@ -48,7 +48,7 @@ const AdminBookings = () => {
   const updateStatus = async (id: string, status: BookingStatus) => {
     setUpdatingId(id);
     try {
-      const response = await fetch(`http://localhost:5000/api/bookings/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Mountain, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-const ADMIN_API_BASE = "http://localhost:5000/api/admin";
+const ADMIN_API_BASE = "${import.meta.env.VITE_API_URL}/api/admin";
 
 type AuthStep = "login" | "email" | "reset";
 

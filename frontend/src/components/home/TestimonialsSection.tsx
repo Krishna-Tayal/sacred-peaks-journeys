@@ -28,7 +28,7 @@ const TestimonialsSection = () => {
   const fetchReviews = async () => {
     setLoadingReviews(true);
     try {
-      const response = await fetch("http://localhost:5000/api/reviews");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`);
       const result = await response.json();
       if (!response.ok) {
         throw new Error(result?.message || "Failed to load reviews.");
@@ -55,7 +55,7 @@ const TestimonialsSection = () => {
     setSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/reviews", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

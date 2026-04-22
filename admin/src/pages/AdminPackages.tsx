@@ -23,7 +23,7 @@ const AdminPackages = () => {
   const fetchPackages = async () => {
     setFetching(true);
     try {
-      const res = await fetch("http://localhost:5000/api/packages");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/packages`);
       const data = await res.json();
       setPkgs(data?.data || []);
     } catch (error) {
@@ -36,7 +36,7 @@ const AdminPackages = () => {
 
   const fetchDestinations = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/destinations");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/destinations`);
       const data = await res.json();
       setDestinations(data?.data || data || []);
     } catch (error) {
@@ -73,7 +73,7 @@ const AdminPackages = () => {
     if (!window.confirm("Are you sure you want to delete this package?")) return;
     try {
       const id = (pkg as any)._id || pkg.id;
-      const res = await fetch(`http://localhost:5000/api/packages/${id}`, { method: "DELETE" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/packages/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) {
         toast({ title: data?.message || "Failed to delete package" });
@@ -119,9 +119,9 @@ const AdminPackages = () => {
       let res;
       if (editing) {
         const id = (editing as any)._id || editing.id;
-        res = await fetch(`http://localhost:5000/api/packages/${id}`, { method: "PUT", body: formData });
+        res = await fetch(`${import.meta.env.VITE_API_URL}/api/packages/${id}`, { method: "PUT", body: formData });
       } else {
-        res = await fetch("http://localhost:5000/api/packages", { method: "POST", body: formData });
+        res = await fetch(`${import.meta.env.VITE_API_URL}/api/packages`, { method: "POST", body: formData });
       }
       const data = await res.json();
       if (!res.ok) {

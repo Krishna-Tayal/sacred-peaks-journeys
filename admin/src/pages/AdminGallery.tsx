@@ -23,7 +23,7 @@ const AdminGallery = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/gallery");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gallery`);
 
       if (!res.ok) {
         throw new Error("Failed to load gallery images.");
@@ -61,7 +61,7 @@ const AdminGallery = () => {
       const formData = new FormData();
       formData.append("image", file);
 
-      const res = await fetch("http://localhost:5000/api/gallery", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gallery`, {
         method: "POST",
         body: formData,
       });
@@ -87,7 +87,7 @@ const AdminGallery = () => {
     if (!window.confirm("Are you sure you want to delete this image?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/gallery/${item._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gallery/${item._id}`, {
         method: "DELETE",
       });
 
