@@ -11,7 +11,13 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 import { ensureAdminUser } from "./utils/ensureAdminUser.js";
+import fs from "fs";
 
+const uploadsPath = path.join(__dirname, "uploads");
+
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
 dotenv.config();
 
 const app = express();

@@ -94,7 +94,9 @@ const AdminPackages = () => {
     setThumbnailPreview("");
   };
 
-  const handleSave = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (!form.name.trim() || selectedDestinations.length === 0 || !form.price.trim() || !form.duration.trim()) {
       toast({ title: "Please fill all required fields" });
       return;
@@ -115,6 +117,11 @@ const AdminPackages = () => {
       const facilitiesArray = form.facilities.split(",").map((f) => f.trim()).filter(Boolean);
       formData.append("facilities", JSON.stringify(facilitiesArray));
       if (thumbnailFile) formData.append("thumbnailImage", thumbnailFile);
+
+      console.log("Submitting form...");
+      for (const [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
 
       let res;
       if (editing) {
@@ -174,7 +181,10 @@ const AdminPackages = () => {
       </div>
 
       {showForm && (
-        <div className="bg-mountain-light/40 rounded-xl p-6 border border-primary-foreground/10 mb-6 space-y-3">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-mountain-light/40 rounded-xl p-6 border border-primary-foreground/10 mb-6 space-y-3"
+        >
           <h3 className="font-display text-base text-primary-foreground">{editing ? "Edit" : "Add"} Package</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input placeholder="Package Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
@@ -215,10 +225,10 @@ const AdminPackages = () => {
             {thumbnailPreview && <img src={thumbnailPreview} alt="Thumbnail" className="w-36 h-24 rounded-lg object-cover mt-2" />}
           </div>
           <div className="flex gap-2">
-            <Button variant="gold" size="sm" onClick={handleSave} disabled={loading}>{loading ? "Saving..." : "Save"}</Button>
-            <Button variant="ghost" size="sm" onClick={() => { setShowForm(false); setEditing(null); resetForm(); }} className="text-primary-foreground/50">Cancel</Button>
+            <Button variant="gold" size="sm" type="submit" disabled={loading}>{loading ? "Saving..." : "Save"}</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => { setShowForm(false); setEditing(null); resetForm(); }} className="text-primary-foreground/50">Cancel</Button>
           </div>
-        </div>
+        </form>
       )}
 
       <div className="space-y-3">

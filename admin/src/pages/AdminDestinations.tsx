@@ -4,7 +4,7 @@ import { type Destination } from "@/data/mockData";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { getImageUrl } from "@/utils/utils";
-
+console.log("API URL:", import.meta.env.VITE_API_URL);
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
@@ -109,7 +109,11 @@ const AdminDestinations = () => {
     setGalleryFiles([]);
   };
 
-  const handleSave = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    alert("SUBMIT WORKING");
+    e.preventDefault();
+    console.log("FORM SUBMITTED");
+
     if (!form.name.trim() || !form.shortDescription.trim()) {
       toast({ title: "Please fill in name and short description" });
       return;
@@ -127,31 +131,13 @@ const AdminDestinations = () => {
       return;
     }
 
-    if (editing) {
-      setDests(dests.map((d) =>
-        d.id === editing.id
-          ? {
-              ...d,
-              ...form,
-              image: thumbnailPreview,
-              thumbnailImage: thumbnailPreview,
-              gallery: galleryPreviews,
-              galleryImages: galleryPreviews,
-            }
-          : d
-      ));
-      toast({ title: "Destination updated" });
-      setShowForm(false);
-      setEditing(null);
-      resetForm();
-      return;
-    }
-
     setLoading(true);
     try {
       const formData = new FormData();
       formData.append("name", form.name);
+      formData.append("shortDescription", form.shortDescription);
       formData.append("description", form.description);
+      formData.append("bestTimeToVisit", form.bestTimeToVisit);
       formData.append("bestTime", form.bestTimeToVisit);
       formData.append("altitude", form.altitude);
 
@@ -162,11 +148,23 @@ const AdminDestinations = () => {
         formData.append("galleryImages", file);
       });
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/destinations`, {
-        method: "POST",
-        body: formData,
-      });
+      console.log("Submitting form...");
+      for (const [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+      const destinationId = editing ? (editing as any)._id || editing.id : null;
+      const response = await fetch(
+        destinationId
+          ? `${import.meta.env.VITE_API_URL}/api/destinations/${destinationId}`
+          : `${import.meta.env.VITE_API_URL}/api/destinations`,
+        {
+          method: destinationId ? "PUT" : "POST",
+          body: formData,
+        }
+      );
       const data = await response.json();
+      console.log("Response:", data);
 
       if (!response.ok) {
         toast({ title: data?.message || "Failed to create destination" });
@@ -174,12 +172,13 @@ const AdminDestinations = () => {
       }
 
       await fetchDestinations();
-      toast({ title: "Destination added successfully" });
+      toast({ title: editing ? "Destination updated" : "Destination added successfully" });
       setShowForm(false);
+      setEditing(null);
       resetForm();
     } catch (error) {
-      console.error(error);
-      toast({ title: "Error creating destination" });
+      console.error("Error saving destination", error);
+      toast({ title: "Error saving destination" });
     } finally {
       setLoading(false);
     }
@@ -223,7 +222,10 @@ const AdminDestinations = () => {
       </div>
 
       {showForm && (
-        <div className="bg-mountain-light/40 rounded-xl p-6 border border-primary-foreground/10 mb-6 space-y-3">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-mountain-light/40 rounded-xl p-6 border border-primary-foreground/10 mb-6 space-y-3"
+        >
           <h3 className="font-display text-base text-primary-foreground">{editing ? "Edit" : "Add"} Destination</h3>
 
           {(["name", "shortDescription", "bestTimeToVisit", "altitude"] as const).map((field) => (
@@ -287,12 +289,16 @@ const AdminDestinations = () => {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="gold" size="sm" onClick={handleSave} disabled={loading}>
+            <button
+              type="submit"
+              disabled={loading}
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gold text-mountain-dark hover:bg-gold/90 h-9 px-4 py-2"
+            >
               {loading ? "Saving..." : "Save"}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => { setShowForm(false); setEditing(null); resetForm(); }} className="text-primary-foreground/50">Cancel</Button>
+            </button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => { setShowForm(false); setEditing(null); resetForm(); }} className="text-primary-foreground/50">Cancel</Button>
           </div>
-        </div>
+        </form>
       )}
 
       <div className="space-y-3">

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Mountain, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-const ADMIN_API_BASE = "${import.meta.env.VITE_API_URL}/api/admin";
+const ADMIN_API_BASE = `${import.meta.env.VITE_API_URL}/api/admin`;
 
 type AuthStep = "login" | "email" | "reset";
 
@@ -34,11 +34,12 @@ const AdminLogin = () => {
     return () => clearInterval(interval);
   }, [resendCooldown]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
 
     try {
-      console.log("Login clicked");
+      console.log("LOGIN CLICKED");
       console.log("Admin login request:", { email });
       const response = await fetch(`${ADMIN_API_BASE}/login`, {
         method: "POST",
@@ -224,7 +225,13 @@ const AdminLogin = () => {
         </div>
         <form
           autoComplete="off"
-          onSubmit={step === "email" ? handleSendOtp : step === "reset" ? handleChangePassword : undefined}
+          onSubmit={
+            step === "login"
+              ? handleLogin
+              : step === "email"
+              ? handleSendOtp
+              : handleChangePassword
+          }
           className="bg-mountain-light/50 backdrop-blur-sm rounded-xl p-8 border border-primary-foreground/10 space-y-4"
         >
           <div className="flex items-center gap-2 mb-4">
@@ -312,8 +319,7 @@ const AdminLogin = () => {
           <Button
             variant="gold"
             className="w-full"
-            type={step === "login" ? "button" : "submit"}
-            onClick={step === "login" ? () => void handleLogin() : undefined}
+            type="submit"
             disabled={loading}
           >
             {loading && "Please wait..."}
