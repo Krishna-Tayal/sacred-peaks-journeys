@@ -187,9 +187,9 @@ const AdminPackages = () => {
         >
           <h3 className="font-display text-base text-primary-foreground">{editing ? "Edit" : "Add"} Package</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <input placeholder="Package Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
-            <input placeholder="Price" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
-            <input placeholder="Duration" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
+            <input placeholder="Package Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10 text-primary-foreground" />
+            <input placeholder="Price" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10 text-primary-foreground" />
+            <input placeholder="Duration" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10 text-primary-foreground" />
           </div>
           <div className="rounded-lg bg-mountain border border-primary-foreground/10 p-3">
             <p className="text-sm font-medium text-primary-foreground mb-2">Select Destinations</p>
@@ -217,8 +217,8 @@ const AdminPackages = () => {
               })}
             </div>
           </div>
-          <textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
-          <input placeholder="Facilities (comma separated)" value={form.facilities} onChange={(e) => setForm({ ...form, facilities: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10" />
+          <textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10 text-primary-foreground" />
+          <input placeholder="Facilities (comma separated)" value={form.facilities} onChange={(e) => setForm({ ...form, facilities: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-mountain border border-primary-foreground/10 text-primary-foreground" />
           <div className="space-y-2">
             <label className="block text-sm font-medium text-primary-foreground">Thumbnail Image</label>
             <input type="file" accept=".jpg,.jpeg,.png,.webp" onChange={handleThumbnailChange} className="w-full text-sm" />
