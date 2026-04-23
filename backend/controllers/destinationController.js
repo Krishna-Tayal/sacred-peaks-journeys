@@ -9,11 +9,12 @@ const generateSlug = (text = "") =>
 
 export const createDestination = async (req, res) => {
   try {
-    const { name, description, bestTimeToVisit, altitude } = req.body;
+    const { name, description, bestTimeToVisit, bestTime, altitude } = req.body;
+    const resolvedBestTime = bestTimeToVisit || bestTime;
     const thumbnailImage = req.files?.thumbnailImage?.[0]?.path;
     const galleryImages = req.files?.galleryImages?.map((f) => f.path) || [];
 
-    if (!name || !description || !bestTimeToVisit || !altitude || !thumbnailImage) {
+    if (!name || !description || !resolvedBestTime || !altitude || !thumbnailImage) {
       return res.status(400).json({ success: false, message: "Missing required destination fields." });
     }
 
@@ -28,7 +29,7 @@ export const createDestination = async (req, res) => {
       name,
       slug,
       description,
-      bestTimeToVisit,
+      bestTime: resolvedBestTime,
       altitude,
       thumbnailImage,
       galleryImages,
@@ -68,9 +69,10 @@ export const getDestinationBySlug = async (req, res) => {
 export const updateDestination = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, slug, description, bestTimeToVisit, altitude } = req.body;
+    const { name, slug, description, bestTimeToVisit, bestTime, altitude } = req.body;
+    const resolvedBestTime = bestTimeToVisit || bestTime;
 
-    const update = { name, slug, description, bestTimeToVisit, altitude };
+    const update = { name, slug, description, bestTime: resolvedBestTime, altitude };
     if (req.files?.thumbnailImage?.[0]?.path) {
       update.thumbnailImage = req.files.thumbnailImage[0].path;
     }
