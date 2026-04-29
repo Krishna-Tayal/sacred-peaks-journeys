@@ -9,7 +9,34 @@ const ContactSection = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Message Sent!", description: "We'll get back to you within 24 hours." });
+
+    const yourNumber = "918126181527";
+
+    const { name, email, phone, message } = formData;
+
+  // validation (optional but good)
+    if (!name || !message || !email || !phone) {
+      toast({ title: "Please fill required fields" });
+      return;
+    }
+
+    const text = `Hello Trip Tonick,
+    Name: ${name}
+    Email: ${email}
+    Phone: ${phone}
+    Message: ${message}`;
+
+    const url = `https://wa.me/${yourNumber}?text=${encodeURIComponent(text)}`;
+
+    window.open(url, "_blank");
+
+  // optional toast
+    toast({
+    title: "Opening WhatsApp",
+    description: "Please send the message there",
+  });
+
+  // clear form
     setFormData({ name: "", email: "", phone: "", message: "" });
   };
 
@@ -43,9 +70,9 @@ const ContactSection = () => {
               Reach out to us for custom packages, group bookings, or any queries about your Char Dham pilgrimage.
             </p>
             {[
-              { icon: Phone, label: "+91 98765 43210" },
+              { icon: Phone, label: "+91 8126181527" },
               { icon: Mail, label: "info@triptonick.com" },
-              { icon: MapPin, label: "Rishikesh, Uttarakhand, India" },
+              { icon: MapPin, label: "Mussoorie, Uttarakhand, India" },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-gold flex items-center justify-center">

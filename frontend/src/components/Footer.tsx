@@ -57,7 +57,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4 text-gold" />
-                +91 98765 43210
+                +91 8126181527
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 text-gold" />
@@ -65,7 +65,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="h-4 w-4 text-gold mt-0.5" />
-                Rishikesh, Uttarakhand, India
+                Mussoorie, Uttarakhand, India
               </li>
             </ul>
           </div>
