@@ -56,7 +56,9 @@ const GallerySection = () => {
                 className="rounded-lg overflow-hidden"
               >
                 <img
-                  src={`${import.meta.env.VITE_API_URL}/${item.image}`}
+                  src={item.image?.startsWith("http")
+      ? item.image
+      : `${import.meta.env.VITE_API_URL}/${item.image}`}
                   alt="gallery"
                   className="w-full h-64 object-cover rounded-lg"
                 />
