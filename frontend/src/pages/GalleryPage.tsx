@@ -14,21 +14,33 @@ const GalleryPage = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchGallery = async () => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gallery`);
-      const result = await res.json();
-      setGalleryImages(result.data || result || []);
-    } catch (error) {
-      console.error("Gallery fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gallery`);
+    
+    console.log("RAW RESPONSE:", res); // 👈 ADD
+
+    const result = await res.json();
+
+    console.log("JSON RESULT:", result); // 👈 ADD
+
+    const data = result.data || result || [];
+
+    console.log("FINAL DATA:", data); // 👈 ADD
+
+    setGalleryImages(data);
+  } catch (error) {
+    console.error("Gallery fetch error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     void fetchGallery();
   }, []);
-
+useEffect(() => {
+  console.log("UPDATED GALLERY:", galleryImages);
+}, [galleryImages]);
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -59,10 +71,10 @@ const GalleryPage = () => {
                   className="rounded-xl overflow-hidden"
                 >
                   <img
-                    src={`${import.meta.env.VITE_API_URL}/${item.image}`}
-                    alt="gallery"
-                    className="w-full h-64 object-cover rounded-lg transition-transform duration-700 hover:scale-105"
-                  />
+              src={item.image}
+              onLoad={() => console.log("loaded")}
+  className="transition-opacity duration-500"
+/>
                 </motion.div>
               ))}
             </div>
